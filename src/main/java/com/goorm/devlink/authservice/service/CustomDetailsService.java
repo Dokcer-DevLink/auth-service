@@ -1,10 +1,8 @@
 package com.goorm.devlink.authservice.service;
 
-import com.goorm.devlink.authservice.dto.UserDto;
 import com.goorm.devlink.authservice.entity.User;
 import com.goorm.devlink.authservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
