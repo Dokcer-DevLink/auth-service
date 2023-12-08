@@ -3,7 +3,6 @@ package com.goorm.devlink.authservice.jwt;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,18 +21,20 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
 // 토큰의 생성, 토큰의 유효성 검증 등을 담당
 public class TokenProvider implements InitializingBean {
 
     private static final String AUTHORITIES_KEY = "auth";
-
-    @Value("${jwt.secret}")
     private final String secret;
-    @Value("${jwt.token-validity-in-seconds}")
     private final long tokenValidityInMilliseconds;
-
     private Key key;
+
+    public TokenProvider(
+            @Value("${jwt.secret}") String secret,
+            @Value("${jwt.token-validity-in-seconds}") long tokenValidityInMilliseconds) {
+        this.secret = secret;
+        this.tokenValidityInMilliseconds = tokenValidityInMilliseconds * 1000;
+    }
 
     @Override
     public void afterPropertiesSet() throws Exception {
