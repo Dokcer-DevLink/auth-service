@@ -2,7 +2,6 @@ package com.goorm.devlink.authservice.jwt;
 
 import com.goorm.devlink.authservice.entity.User;
 import com.goorm.devlink.authservice.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,13 +17,17 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Slf4j
-@RequiredArgsConstructor
 public class JwtFilter extends GenericFilterBean {
 
     public static final String AUTHORIZATION_HEADER = "Authorization";
 
     private final TokenProvider tokenProvider;
     private final UserRepository userRepository;
+
+    public JwtFilter(TokenProvider tokenProvider, UserRepository userRepository) {
+        this.tokenProvider = tokenProvider;
+        this.userRepository = userRepository;
+    }
 
     // 토큰의 인증정보를 SecurityContext에 저장하는 역할을 수행
     @Override
