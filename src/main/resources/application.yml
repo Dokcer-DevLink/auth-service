@@ -1,4 +1,26 @@
 
+spring:
+  application:
+    name: auth-service
+  h2:
+    console:
+      enabled: true
+  datasource:
+    url: jdbc:mysql://localhost:3306/auth?characterEncoding=UTF-8&serverTimezone=UTC
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: 1234
+    initialization-mode: always
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+    defer-datasource-initialization: true
+
 jwt:
   header: Authorization
   secret: Z29vcm10aG9uLWRvY2tlci1wcm9qZWN0LWF1dGgtc2VydmljZS1qd3QtYXV0aG9yaXphdGlvbi1rZXktZ29vcm10aG9kLWRvY2tlci1wcm9qZWN0LWF1dGgtc2VydmljZQo=
