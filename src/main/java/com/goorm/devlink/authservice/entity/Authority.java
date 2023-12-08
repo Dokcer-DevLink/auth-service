@@ -16,7 +16,7 @@ import javax.persistence.Table;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Authority extends AuditingFields {
+public class Authority {
 
     @Id
     @Column(name = "authority_name", length = 50)

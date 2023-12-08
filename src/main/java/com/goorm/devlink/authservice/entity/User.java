@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -37,7 +38,11 @@ public class User extends AuditingFields {
     @Column(name = "activated")
     private boolean activated;
 
+    @Column(name = "user_uuid")
     private String userUuid;
+
+    @Column(name = "is_deleted", columnDefinition = "boolean default false")
+    private boolean isDeleted;
 
     @ManyToMany
     @JoinTable(
