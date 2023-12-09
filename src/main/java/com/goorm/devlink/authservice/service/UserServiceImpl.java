@@ -30,7 +30,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void join(UserDto userDto) {
         if(userRepository.findOneWithAuthoritiesByEmail(userDto.getEmail()).orElse(null) != null) {
-            throw new RuntimeException("이미 가입되어 있는 유저입니다.");
+            throw new AuthServiceException(ErrorCode.DUPLICATED_USER_EMAIL);
         }
 
         Authority authority = Authority.builder()

@@ -8,11 +8,12 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum ErrorCode {
 
-    DUPLICATED_USER_ACCOUNT_ID(HttpStatus.CONFLICT, "User Email is duplicated"),
+    DUPLICATED_USER_EMAIL(HttpStatus.CONFLICT, "User Email is duplicated"),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "User not founded"),
     INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "Password is invalid"),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error"),
-    INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "Token is invalid"),
+    INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "Access Token is invalid"),
+    INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "Refresh Token is invalid"),
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "Article not founded"),
     INVALID_PERMISSION(HttpStatus.UNAUTHORIZED, "Permission is invalid");
 

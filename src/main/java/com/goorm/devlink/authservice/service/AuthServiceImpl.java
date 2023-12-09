@@ -1,0 +1,60 @@
+package com.goorm.devlink.authservice.service;
+
+import com.goorm.devlink.authservice.dto.TokenDto;
+import com.goorm.devlink.authservice.exception.AuthServiceException;
+import com.goorm.devlink.authservice.exception.ErrorCode;
+import com.goorm.devlink.authservice.jwt.TokenProvider;
+import com.goorm.devlink.authservice.redis.RedisUtil;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+
+import java.util.stream.Collectors;
+
+@Slf4j
+@RequiredArgsConstructor
+@Service
+public class AuthServiceImpl implements AuthService {
+
+    private final TokenProvider tokenProvider;
+    private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final RedisUtil redisUtil;
+
+    @Override
+    public TokenDto authorize(String email, String password) {
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(email, password);
+
+        Authentication authentication = authenticationManagerBuilder.getObject()
+                .authenticate(authenticationToken);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        String authorities = getAuthorities(authentication);
+
+        return tokenProvider.createToken(authentication.getName(), authorities);
+    }
+
+    @Override
+    public TokenDto reissue(String accessToken, String refreshToken) {
+        if(!tokenProvider.validateToken(refreshToken)) {
+            throw new AuthServiceException(ErrorCode.INVALID_REFRESH_TOKEN);
+        }
+
+        Authentication authentication = tokenProvider.getAuthentication(accessToken);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String authorities = getAuthorities(authentication);
+
+        return tokenProvider.createToken(authentication.getName(), authorities);
+    }
+
+    public String getAuthorities(Authentication authentication) {
+        return authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(","));
+    }
+}

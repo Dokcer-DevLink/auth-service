@@ -1,8 +1,8 @@
 package com.goorm.devlink.authservice.controller;
 
+import com.goorm.devlink.authservice.dto.TokenDto;
 import com.goorm.devlink.authservice.dto.UserDto;
-import com.goorm.devlink.authservice.jwt.JwtFilter;
-import com.goorm.devlink.authservice.jwt.TokenProvider;
+import com.goorm.devlink.authservice.service.AuthService;
 import com.goorm.devlink.authservice.service.UserService;
 import com.goorm.devlink.authservice.vo.request.UserJoinReqeust;
 import com.goorm.devlink.authservice.vo.request.UserLoginRequest;
@@ -12,10 +12,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -27,8 +23,7 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
-    private final TokenProvider tokenProvider;
-    private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final AuthService authService;
 
     @PostMapping("/join")
     public ResponseEntity<Void> signUp(@RequestBody UserJoinReqeust reqeust) {
@@ -39,16 +34,12 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@RequestBody UserLoginRequest request) {
-        UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword());
+    public ResponseEntity<TokenDto> login(@RequestBody UserLoginRequest request) {
+        TokenDto tokenDto = authService.authorize(request.getEmail(), request.getPassword());
 
-        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        String jwt = tokenProvider.createToken(authentication);
         HttpHeaders headers = new HttpHeaders();
-        headers.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
+        headers.add("accessToken", tokenDto.getAccessToken());
+        headers.add("refreshToken", tokenDto.getRefreshToken());
 
         return new ResponseEntity<>(headers, HttpStatus.OK);
     }
@@ -72,5 +63,19 @@ public class UserController {
         });
 
         return ResponseEntity.ok(userResponseList);
+    }
+
+    @PostMapping("/reissue")
+    public ResponseEntity<TokenDto> reissue(
+            @RequestHeader("accessToken") String accessToken,
+            @RequestHeader("refreshToken") String refreshToken) {
+
+        TokenDto tokenDto = authService.reissue(accessToken, refreshToken);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("accessToken", tokenDto.getAccessToken());
+        headers.add("refreshToken", tokenDto.getRefreshToken());
+
+        return new ResponseEntity<>(headers, HttpStatus.OK);
     }
 }

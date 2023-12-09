@@ -1,5 +1,11 @@
 package com.goorm.devlink.authservice.jwt;
 
+import com.goorm.devlink.authservice.dto.TokenDto;
+import com.goorm.devlink.authservice.entity.User;
+import com.goorm.devlink.authservice.exception.AuthServiceException;
+import com.goorm.devlink.authservice.exception.ErrorCode;
+import com.goorm.devlink.authservice.redis.RedisUtil;
+import com.goorm.devlink.authservice.repository.UserRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -10,13 +16,12 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -26,14 +31,25 @@ public class TokenProvider implements InitializingBean {
 
     private static final String AUTHORITIES_KEY = "auth";
     private final String secret;
-    private final long tokenValidityInMilliseconds;
+    private final long accessTokenValidityInMilliseconds;
+    private final long refreshTokenValidityInMilliseconds;
+    private final RedisUtil redisUtil;
+
     private Key key;
+
+    private final UserRepository userRepository;
 
     public TokenProvider(
             @Value("${jwt.secret}") String secret,
-            @Value("${jwt.token-validity-in-seconds}") long tokenValidityInMilliseconds) {
+            @Value("${jwt.access-token-validity-in-seconds}") long accessTokenValidityInSeconds,
+            @Value("${jwt.refresh-token-validity-in-seconds}") long refreshTokenValidityInSeconds,
+            UserRepository userRepository,
+            RedisUtil redisUtil) {
         this.secret = secret;
-        this.tokenValidityInMilliseconds = tokenValidityInMilliseconds * 1000;
+        this.accessTokenValidityInMilliseconds = accessTokenValidityInSeconds * 1000;
+        this.refreshTokenValidityInMilliseconds = refreshTokenValidityInSeconds * 1000;
+        this.userRepository = userRepository;
+        this.redisUtil = redisUtil;
     }
 
     @Override
@@ -43,39 +59,40 @@ public class TokenProvider implements InitializingBean {
     }
 
     // Authorization 객체의 권한 정보를 이용해서 토큰을 생성하는 메소드
-    public String createToken(Authentication authentication) {
-        String authorities = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));
+    public TokenDto createToken(String email, String authorities) {
 
         long now = (new Date()).getTime();
-        Date validity = new Date(now + this.tokenValidityInMilliseconds);
+        User user = userRepository.findByEmail(email) // princial.toSTring()
+                .orElseThrow(() -> new AuthServiceException(ErrorCode.USER_NOT_FOUND));
 
-        return Jwts.builder()
-                .setSubject(authentication.getName())
+        String accessToken = Jwts.builder()
+                .claim("email", user.getEmail())
+                .claim("nickname", user.getNickname())
                 .claim(AUTHORITIES_KEY, authorities)
+                .setExpiration(new Date(now + accessTokenValidityInMilliseconds))
                 .signWith(key, SignatureAlgorithm.HS512)
-                .setExpiration(validity)
                 .compact();
-    }
+
+        String refreshToken = Jwts.builder()
+                .claim(AUTHORITIES_KEY, authorities)
+                .claim("email", user.getEmail())
+                .claim("nickname", user.getNickname())
+                .setExpiration(new Date(now + refreshTokenValidityInMilliseconds))
+                .signWith(key, SignatureAlgorithm.HS512)
+                .compact();
+
+        return new TokenDto(accessToken, refreshToken);    }
 
     // 토큰에 담겨 있는 정보를 이용해 Authentication 객체를 리턴하는 메소드
     public Authentication getAuthentication(String token) {
-        Claims claims = Jwts
-                .parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        Claims claims = getClaims(token);
 
-        List<? extends GrantedAuthority> authorities =
+        Collection<? extends GrantedAuthority> authorities =
                 Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
+        return new UsernamePasswordAuthenticationToken(claims.get("email"), null, authorities);
 
-        User principal = new User(claims.getSubject(), "", authorities);
-
-        return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
 
     // 토큰의 유효성 검사
@@ -93,5 +110,21 @@ public class TokenProvider implements InitializingBean {
             log.info("JWT 토큰이 잘못되었습니다.");
         }
         return false;
+    }
+
+    /*
+     * 토큰에서 Claim 추츨하는 메서드
+     */
+    public Claims getClaims(String token) {
+        try {
+            return Jwts
+                    .parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (ExpiredJwtException e) {
+            return e.getClaims();
+        }
     }
 }
