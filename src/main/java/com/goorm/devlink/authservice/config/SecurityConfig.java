@@ -7,6 +7,7 @@ import com.goorm.devlink.authservice.jwt.TokenProvider;
 import com.goorm.devlink.authservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -53,8 +54,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/auth-service/join").permitAll()
-                .antMatchers("/auth-service/login").permitAll()
+                .antMatchers("/auth-service/api/join").permitAll()
+                .antMatchers("/auth-service/api/login").permitAll()
+                .antMatchers(HttpMethod.GET, "/auth-service/api/users/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .apply(new JwtSecurityConfig(tokenProvider, userRepository));
