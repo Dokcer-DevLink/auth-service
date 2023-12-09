@@ -3,14 +3,19 @@ package com.goorm.devlink.authservice.service;
 import com.goorm.devlink.authservice.dto.UserDto;
 import com.goorm.devlink.authservice.entity.Authority;
 import com.goorm.devlink.authservice.entity.User;
+import com.goorm.devlink.authservice.exception.AuthServiceException;
+import com.goorm.devlink.authservice.exception.ErrorCode;
 import com.goorm.devlink.authservice.repository.UserRepository;
-import com.goorm.devlink.authservice.vo.request.UserJoinReqeust;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -22,6 +27,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
+    @Transactional
     public void join(UserDto userDto) {
         if(userRepository.findOneWithAuthoritiesByEmail(userDto.getEmail()).orElse(null) != null) {
             throw new RuntimeException("이미 가입되어 있는 유저입니다.");
@@ -41,5 +47,31 @@ public class UserServiceImpl implements UserService {
                 .build();
 
         userRepository.save(user);
+    }
+
+    @Override
+    public UserDto getUserByUserUuid(String userUuid) {
+        User user = userRepository.findByUserUuid(userUuid).orElseThrow(() ->
+            new AuthServiceException(ErrorCode.USER_NOT_FOUND));
+
+        if(!user.isActivated() || user.isDeleted()) {
+            throw new AuthServiceException(ErrorCode.USER_NOT_FOUND);
+        }
+
+        return new ModelMapper().map(user, UserDto.class);
+    }
+
+    @Override
+    public List<UserDto> getUsers() {
+        List<User> userList = userRepository.findAll();
+
+        ModelMapper mapper = new ModelMapper();
+
+        List<UserDto> userDtoList = new ArrayList<>();
+        userList.forEach(u -> {
+            userDtoList.add(mapper.map(u, UserDto.class));
+        });
+
+        return userDtoList;
     }
 }
