@@ -36,6 +36,7 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<TokenDto> login(@RequestBody UserLoginRequest request) {
         TokenDto tokenDto = authService.authorize(request.getEmail(), request.getPassword());
+
         HttpHeaders headers = new HttpHeaders();
         headers.add("accessToken", tokenDto.getAccessToken());
         headers.add("refreshToken", tokenDto.getRefreshToken());
@@ -62,5 +63,19 @@ public class UserController {
         });
 
         return ResponseEntity.ok(userResponseList);
+    }
+
+    @PostMapping("/reissue")
+    public ResponseEntity<TokenDto> reissue(
+            @RequestHeader("accessToken") String accessToken,
+            @RequestHeader("refreshToken") String refreshToken) {
+
+        TokenDto tokenDto = authService.reissue(accessToken, refreshToken);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("accessToken", tokenDto.getAccessToken());
+        headers.add("refreshToken", tokenDto.getRefreshToken());
+
+        return new ResponseEntity<>(headers, HttpStatus.OK);
     }
 }

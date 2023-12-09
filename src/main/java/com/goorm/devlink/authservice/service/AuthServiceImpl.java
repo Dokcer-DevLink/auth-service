@@ -1,6 +1,8 @@
 package com.goorm.devlink.authservice.service;
 
 import com.goorm.devlink.authservice.dto.TokenDto;
+import com.goorm.devlink.authservice.exception.AuthServiceException;
+import com.goorm.devlink.authservice.exception.ErrorCode;
 import com.goorm.devlink.authservice.jwt.TokenProvider;
 import com.goorm.devlink.authservice.redis.RedisUtil;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +34,19 @@ public class AuthServiceImpl implements AuthService {
                 .authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
+        String authorities = getAuthorities(authentication);
+
+        return tokenProvider.createToken(authentication.getName(), authorities);
+    }
+
+    @Override
+    public TokenDto reissue(String accessToken, String refreshToken) {
+        if(!tokenProvider.validateToken(refreshToken)) {
+            throw new AuthServiceException(ErrorCode.INVALID_REFRESH_TOKEN);
+        }
+
+        Authentication authentication = tokenProvider.getAuthentication(accessToken);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
         String authorities = getAuthorities(authentication);
 
         return tokenProvider.createToken(authentication.getName(), authorities);
