@@ -78,4 +78,12 @@ public class UserController {
 
         return new ResponseEntity<>(headers, HttpStatus.OK);
     }
+
+    @DeleteMapping("/logout")
+    public ResponseEntity<Void> logout(
+            @RequestHeader("accessToken") String accessToken,
+            @RequestHeader("refreshToken") String refreshToken) {
+        authService.logout(accessToken, refreshToken);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
 }

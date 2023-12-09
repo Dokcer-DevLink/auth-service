@@ -7,4 +7,6 @@ public interface AuthService {
     TokenDto authorize(String email, String password);
 
     TokenDto reissue(String accessToken, String refreshToken);
+
+    void logout(String accessToken, String refreshToken);
 }
