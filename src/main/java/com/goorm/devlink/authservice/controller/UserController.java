@@ -112,9 +112,12 @@ public class UserController {
 
     @DeleteMapping("/users")
     public ResponseEntity<Void> deleteUser(Authentication authentication,
-                                           @RequestHeader("userUuid") String userUuid) {
+                                           @RequestHeader("userUuid") String userUuid,
+                                           @RequestHeader("accessToken") String accessToken,
+                                           @RequestHeader("refreshToken") String refreshToken) {
 
         userService.deleteUser(authentication.getName(), userUuid);
+        authService.logout(accessToken, refreshToken);
 
         return ResponseEntity.ok().build();
     }
