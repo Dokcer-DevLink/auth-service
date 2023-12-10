@@ -9,4 +9,6 @@ public interface AuthService {
     TokenDto reissue(String accessToken, String refreshToken);
 
     void logout(String accessToken, String refreshToken);
+
+    boolean validateCheck(String email, String userUuid);
 }

@@ -99,4 +99,11 @@ public class UserController {
 
         return ResponseEntity.status(HttpStatus.OK).build();
     }
+
+    @GetMapping("/validate")
+    public ResponseEntity<Boolean> validateCheck(Authentication authentication,
+                                                 @RequestHeader("userUuid") String userUuid) {
+        boolean isActivated = authService.validateCheck(authentication.getName(), userUuid);
+        return ResponseEntity.ok(isActivated);
+    }
 }
