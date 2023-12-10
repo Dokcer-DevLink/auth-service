@@ -81,7 +81,8 @@ public class TokenProvider implements InitializingBean {
                 .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
 
-        return new TokenDto(accessToken, refreshToken);    }
+        return new TokenDto(accessToken, refreshToken);
+    }
 
     // 토큰에 담겨 있는 정보를 이용해 Authentication 객체를 리턴하는 메소드
     public Authentication getAuthentication(String token) {
@@ -92,7 +93,6 @@ public class TokenProvider implements InitializingBean {
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
         return new UsernamePasswordAuthenticationToken(claims.get("email"), null, authorities);
-
     }
 
     // 토큰의 유효성 검사
