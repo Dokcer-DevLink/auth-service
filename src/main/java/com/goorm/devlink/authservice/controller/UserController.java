@@ -41,7 +41,7 @@ public class UserController {
         TokenDto tokenDto = authService.authorize(request.getEmail(), request.getPassword());
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("accessToken", tokenDto.getAccessToken());
+        headers.add("Authorization", tokenDto.getAccessToken());
         headers.add("refreshToken", tokenDto.getRefreshToken());
 
         return new ResponseEntity<>(headers, HttpStatus.OK);
@@ -70,7 +70,7 @@ public class UserController {
 
     @PostMapping("/reissue")
     public ResponseEntity<TokenDto> reissue(
-            @RequestHeader("accessToken") String accessToken,
+            @RequestHeader("Authorization") String accessToken,
             @RequestHeader("refreshToken") String refreshToken) {
 
         TokenDto tokenDto = authService.reissue(accessToken, refreshToken);
@@ -84,7 +84,7 @@ public class UserController {
 
     @DeleteMapping("/logout")
     public ResponseEntity<Void> logout(
-            @RequestHeader("accessToken") String accessToken,
+            @RequestHeader("Authorization") String accessToken,
             @RequestHeader("refreshToken") String refreshToken) {
 
         authService.logout(accessToken, refreshToken);
@@ -113,7 +113,7 @@ public class UserController {
     @DeleteMapping("/users")
     public ResponseEntity<Void> deleteUser(Authentication authentication,
                                            @RequestHeader("userUuid") String userUuid,
-                                           @RequestHeader("accessToken") String accessToken,
+                                           @RequestHeader("Authorization") String accessToken,
                                            @RequestHeader("refreshToken") String refreshToken) {
 
         userService.deleteUser(authentication.getName(), userUuid);
