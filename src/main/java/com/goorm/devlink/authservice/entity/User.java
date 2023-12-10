@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -15,6 +16,7 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Where(clause = "is_deleted=false")
 public class User extends AuditingFields {
 
     @JsonIgnore
@@ -34,13 +36,13 @@ public class User extends AuditingFields {
     private String nickname;
 
     @JsonIgnore
-    @Column(name = "activated")
+    @Column(name = "activated", columnDefinition = "boolean default true NOT NULL")
     private boolean activated;
 
     @Column(name = "user_uuid")
     private String userUuid;
 
-    @Column(name = "is_deleted", columnDefinition = "boolean default false")
+    @Column(name = "is_deleted", columnDefinition = "boolean default false NOT NULL")
     private boolean isDeleted;
 
     @ManyToMany

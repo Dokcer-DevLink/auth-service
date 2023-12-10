@@ -54,7 +54,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByUserUuid(userUuid).orElseThrow(() ->
             new AuthServiceException(ErrorCode.USER_NOT_FOUND));
 
-        if(!user.isActivated() || user.isDeleted()) {
+        if(!user.isActivated()) {
             throw new AuthServiceException(ErrorCode.USER_NOT_FOUND);
         }
 
@@ -99,5 +99,6 @@ public class UserServiceImpl implements UserService {
         }
 
         user.changeDeleted(true);
+        userRepository.save(user);
     }
 }

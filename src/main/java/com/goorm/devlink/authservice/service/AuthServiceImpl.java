@@ -70,7 +70,6 @@ public class AuthServiceImpl implements AuthService {
             throw new AuthServiceException(ErrorCode.INVALID_USER_UUID);
         }
 
-        if (user.isDeleted()) return false;
         return user.isActivated();
     }
 
