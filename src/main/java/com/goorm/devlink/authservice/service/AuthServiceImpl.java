@@ -52,6 +52,13 @@ public class AuthServiceImpl implements AuthService {
         return tokenProvider.createToken(authentication.getName(), authorities);
     }
 
+    @Override
+    public void logout(String accessToken, String refreshToken) {
+        redisUtil.setBlackList(accessToken, "accessToken", 1800);
+        redisUtil.setBlackList(refreshToken, "refreshToken", 60400);
+    }
+
+    // 권한을 가져오는 메소드
     public String getAuthorities(Authentication authentication) {
         return authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)

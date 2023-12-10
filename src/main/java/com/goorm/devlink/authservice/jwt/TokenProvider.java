@@ -81,7 +81,8 @@ public class TokenProvider implements InitializingBean {
                 .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
 
-        return new TokenDto(accessToken, refreshToken);    }
+        return new TokenDto(accessToken, refreshToken);
+    }
 
     // 토큰에 담겨 있는 정보를 이용해 Authentication 객체를 리턴하는 메소드
     public Authentication getAuthentication(String token) {
@@ -92,13 +93,15 @@ public class TokenProvider implements InitializingBean {
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
         return new UsernamePasswordAuthenticationToken(claims.get("email"), null, authorities);
-
     }
 
     // 토큰의 유효성 검사
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            if(redisUtil.hasKeyBlackList(token)) {
+                throw new AuthServiceException(ErrorCode.INVALID_ACCESS_TOKEN, "로그아웃 또는 탈퇴한 회원입니다.");
+            }
             return true;
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
             log.info("잘못된 JWT 서명입니다.");
