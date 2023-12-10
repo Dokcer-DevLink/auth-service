@@ -104,7 +104,18 @@ public class UserController {
     @GetMapping("/validate")
     public ResponseEntity<UserValidatedResponse> validateCheck(Authentication authentication,
                                                  @RequestHeader("userUuid") String userUuid) {
+
         boolean isActivated = authService.validateCheck(authentication.getName(), userUuid);
+
         return ResponseEntity.ok(new UserValidatedResponse(isActivated));
+    }
+
+    @DeleteMapping("/users")
+    public ResponseEntity<Void> deleteUser(Authentication authentication,
+                                           @RequestHeader("userUuid") String userUuid) {
+
+        userService.deleteUser(authentication.getName(), userUuid);
+
+        return ResponseEntity.ok().build();
     }
 }

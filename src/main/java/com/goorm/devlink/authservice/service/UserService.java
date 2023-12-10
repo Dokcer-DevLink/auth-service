@@ -13,4 +13,6 @@ public interface UserService {
     List<UserDto> getUsers();
 
     void modifyUserinfo(String email, String userUuid, String nickname, String password);
+
+    void deleteUser(String email, String userUuid);
 }

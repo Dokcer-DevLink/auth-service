@@ -59,4 +59,8 @@ public class User extends AuditingFields {
             this.password = password;
         }
     }
+
+    public void changeDeleted(boolean isDeleted) {
+        this.isDeleted = isDeleted;
+    }
 }

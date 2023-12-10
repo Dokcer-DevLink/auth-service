@@ -88,4 +88,16 @@ public class UserServiceImpl implements UserService {
 
         userRepository.save(user);
     }
+
+    @Override
+    public void deleteUser(String email, String userUuid) {
+        User user = userRepository.findByEmail(email).orElseThrow(() ->
+                new AuthServiceException(ErrorCode.USER_NOT_FOUND));
+
+        if(!user.getUserUuid().equals(userUuid)) {
+            throw new AuthServiceException(ErrorCode.INVALID_USER_UUID);
+        }
+
+        user.changeDeleted(true);
+    }
 }
