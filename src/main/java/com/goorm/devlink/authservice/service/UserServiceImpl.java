@@ -54,7 +54,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByUserUuid(userUuid).orElseThrow(() ->
             new AuthServiceException(ErrorCode.USER_NOT_FOUND));
 
-        if(!user.isActivated() || user.isDeleted()) {
+        if(!user.isActivated()) {
             throw new AuthServiceException(ErrorCode.USER_NOT_FOUND);
         }
 
@@ -73,5 +73,32 @@ public class UserServiceImpl implements UserService {
         });
 
         return userDtoList;
+    }
+
+    @Override
+    public void modifyUserinfo(String email, String userUuid, String nickname, String password) {
+        User user = userRepository.findByEmail(email).orElseThrow(() ->
+                new AuthServiceException(ErrorCode.USER_NOT_FOUND));
+
+        if(!user.getUserUuid().equals(userUuid)) {
+            throw new AuthServiceException(ErrorCode.INVALID_USER_UUID);
+        }
+
+        user.modifyUserInfo(nickname, passwordEncoder.encode(password));
+
+        userRepository.save(user);
+    }
+
+    @Override
+    public void deleteUser(String email, String userUuid) {
+        User user = userRepository.findByEmail(email).orElseThrow(() ->
+                new AuthServiceException(ErrorCode.USER_NOT_FOUND));
+
+        if(!user.getUserUuid().equals(userUuid)) {
+            throw new AuthServiceException(ErrorCode.INVALID_USER_UUID);
+        }
+
+        user.changeDeleted(true);
+        userRepository.save(user);
     }
 }

@@ -1,10 +1,12 @@
 package com.goorm.devlink.authservice.service;
 
 import com.goorm.devlink.authservice.dto.TokenDto;
+import com.goorm.devlink.authservice.entity.User;
 import com.goorm.devlink.authservice.exception.AuthServiceException;
 import com.goorm.devlink.authservice.exception.ErrorCode;
 import com.goorm.devlink.authservice.jwt.TokenProvider;
 import com.goorm.devlink.authservice.redis.RedisUtil;
+import com.goorm.devlink.authservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,6 +26,7 @@ public class AuthServiceImpl implements AuthService {
     private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final RedisUtil redisUtil;
+    private final UserRepository userRepository;
 
     @Override
     public TokenDto authorize(String email, String password) {
@@ -41,7 +44,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public TokenDto reissue(String accessToken, String refreshToken) {
-        if(!tokenProvider.validateToken(refreshToken)) {
+        if (!tokenProvider.validateToken(refreshToken)) {
             throw new AuthServiceException(ErrorCode.INVALID_REFRESH_TOKEN);
         }
 
@@ -56,6 +59,18 @@ public class AuthServiceImpl implements AuthService {
     public void logout(String accessToken, String refreshToken) {
         redisUtil.setBlackList(accessToken, "accessToken", 1800);
         redisUtil.setBlackList(refreshToken, "refreshToken", 60400);
+    }
+
+    @Override
+    public boolean validateCheck(String email, String userUuid) {
+        User user = userRepository.findByEmail(email).orElseThrow(() ->
+                new AuthServiceException(ErrorCode.USER_NOT_FOUND));
+
+        if (!user.getUserUuid().equals(userUuid)) {
+            throw new AuthServiceException(ErrorCode.INVALID_USER_UUID);
+        }
+
+        return user.isActivated();
     }
 
     // 권한을 가져오는 메소드

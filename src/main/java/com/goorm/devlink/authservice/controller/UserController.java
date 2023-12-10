@@ -6,12 +6,15 @@ import com.goorm.devlink.authservice.service.AuthService;
 import com.goorm.devlink.authservice.service.UserService;
 import com.goorm.devlink.authservice.vo.request.UserJoinReqeust;
 import com.goorm.devlink.authservice.vo.request.UserLoginRequest;
+import com.goorm.devlink.authservice.vo.request.UserModifyRequest;
 import com.goorm.devlink.authservice.vo.response.UserResponse;
+import com.goorm.devlink.authservice.vo.response.UserValidatedResponse;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -38,7 +41,7 @@ public class UserController {
         TokenDto tokenDto = authService.authorize(request.getEmail(), request.getPassword());
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("accessToken", tokenDto.getAccessToken());
+        headers.add("Authorization", tokenDto.getAccessToken());
         headers.add("refreshToken", tokenDto.getRefreshToken());
 
         return new ResponseEntity<>(headers, HttpStatus.OK);
@@ -67,7 +70,7 @@ public class UserController {
 
     @PostMapping("/reissue")
     public ResponseEntity<TokenDto> reissue(
-            @RequestHeader("accessToken") String accessToken,
+            @RequestHeader("Authorization") String accessToken,
             @RequestHeader("refreshToken") String refreshToken) {
 
         TokenDto tokenDto = authService.reissue(accessToken, refreshToken);
@@ -81,9 +84,41 @@ public class UserController {
 
     @DeleteMapping("/logout")
     public ResponseEntity<Void> logout(
-            @RequestHeader("accessToken") String accessToken,
+            @RequestHeader("Authorization") String accessToken,
             @RequestHeader("refreshToken") String refreshToken) {
+
         authService.logout(accessToken, refreshToken);
+
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @PutMapping("/users")
+    public ResponseEntity<Void> modifyUserInfo(Authentication authentication,
+                                               @RequestHeader("userUuid") String userUuid,
+                                               @RequestBody UserModifyRequest request) {
+        userService.modifyUserinfo(authentication.getName(), userUuid, request.getNickname(), request.getPassword());
+
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @GetMapping("/validate")
+    public ResponseEntity<UserValidatedResponse> validateCheck(Authentication authentication,
+                                                 @RequestHeader("userUuid") String userUuid) {
+
+        boolean isActivated = authService.validateCheck(authentication.getName(), userUuid);
+
+        return ResponseEntity.ok(new UserValidatedResponse(isActivated));
+    }
+
+    @DeleteMapping("/users")
+    public ResponseEntity<Void> deleteUser(Authentication authentication,
+                                           @RequestHeader("userUuid") String userUuid,
+                                           @RequestHeader("Authorization") String accessToken,
+                                           @RequestHeader("refreshToken") String refreshToken) {
+
+        userService.deleteUser(authentication.getName(), userUuid);
+        authService.logout(accessToken, refreshToken);
+
+        return ResponseEntity.ok().build();
     }
 }
