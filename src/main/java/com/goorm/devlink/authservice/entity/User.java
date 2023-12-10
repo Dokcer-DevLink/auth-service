@@ -50,4 +50,13 @@ public class User extends AuditingFields {
             inverseJoinColumns = {@JoinColumn(name = "authority_name", referencedColumnName = "authority_name")})
     private Set<Authority> authorities;
 
+    public void modifyUserInfo(String nickname, String password) {
+        if(nickname != null) {
+            this.nickname = nickname;
+        }
+
+        if(password != null) {
+            this.password = password;
+        }
+    }
 }

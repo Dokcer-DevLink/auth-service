@@ -74,4 +74,18 @@ public class UserServiceImpl implements UserService {
 
         return userDtoList;
     }
+
+    @Override
+    public void modifyUserinfo(String email, String userUuid, String nickname, String password) {
+        User user = userRepository.findByEmail(email).orElseThrow(() ->
+                new AuthServiceException(ErrorCode.USER_NOT_FOUND));
+
+        if(!user.getUserUuid().equals(userUuid)) {
+            throw new AuthServiceException(ErrorCode.INVALID_USER_UUID);
+        }
+
+        user.modifyUserInfo(nickname, passwordEncoder.encode(password));
+
+        userRepository.save(user);
+    }
 }

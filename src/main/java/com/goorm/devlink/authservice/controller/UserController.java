@@ -6,12 +6,14 @@ import com.goorm.devlink.authservice.service.AuthService;
 import com.goorm.devlink.authservice.service.UserService;
 import com.goorm.devlink.authservice.vo.request.UserJoinReqeust;
 import com.goorm.devlink.authservice.vo.request.UserLoginRequest;
+import com.goorm.devlink.authservice.vo.request.UserModifyRequest;
 import com.goorm.devlink.authservice.vo.response.UserResponse;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -83,7 +85,18 @@ public class UserController {
     public ResponseEntity<Void> logout(
             @RequestHeader("accessToken") String accessToken,
             @RequestHeader("refreshToken") String refreshToken) {
+
         authService.logout(accessToken, refreshToken);
+
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @PutMapping("/users")
+    public ResponseEntity<Void> modifyUserInfo(Authentication authentication,
+                                               @RequestHeader("userUuid") String userUuid,
+                                               @RequestBody UserModifyRequest request) {
+        userService.modifyUserinfo(authentication.getName(), userUuid, request.getNickname(), request.getPassword());
+
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }
