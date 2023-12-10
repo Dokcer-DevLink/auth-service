@@ -8,6 +8,7 @@ import com.goorm.devlink.authservice.vo.request.UserJoinReqeust;
 import com.goorm.devlink.authservice.vo.request.UserLoginRequest;
 import com.goorm.devlink.authservice.vo.request.UserModifyRequest;
 import com.goorm.devlink.authservice.vo.response.UserResponse;
+import com.goorm.devlink.authservice.vo.response.UserValidatedResponse;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpHeaders;
@@ -101,9 +102,9 @@ public class UserController {
     }
 
     @GetMapping("/validate")
-    public ResponseEntity<Boolean> validateCheck(Authentication authentication,
+    public ResponseEntity<UserValidatedResponse> validateCheck(Authentication authentication,
                                                  @RequestHeader("userUuid") String userUuid) {
         boolean isActivated = authService.validateCheck(authentication.getName(), userUuid);
-        return ResponseEntity.ok(isActivated);
+        return ResponseEntity.ok(new UserValidatedResponse(isActivated));
     }
 }
