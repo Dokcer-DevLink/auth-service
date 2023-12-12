@@ -18,6 +18,7 @@ pipeline {
         }
         stage('Build') {
             steps {
+                sh 'mvn clean package'
                 // Build your Java application (e.g., using Maven or Gradle)
                 // Example: sh 'mvn clean package'
             }
