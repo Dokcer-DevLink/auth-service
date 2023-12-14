@@ -30,9 +30,9 @@ pipeline {
                 sh 'docker build -t digitaltulbo/jenkins-cicd .' 
                     }
                 }
-            }
+            
         }
-    }
+
 
     post {
         always {
