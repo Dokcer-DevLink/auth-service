@@ -27,6 +27,16 @@ pipeline {
                 // Example: sh 'mvn clean package'
             }
         }
+
+       stage('Docker Build') {
+            steps {
+                // sh './gradlew clean build --warning-mode all' 
+                //sh './gradlew bootJar'
+                sh "docker build -t $IMAGE_NAME:$IMAGE_TAG ."
+                // Build your Java application (e.g., using Maven or Gradle)
+                // Example: sh 'mvn clean package'
+            }
+        }
         stage('Docker Build and Push') {
             steps {
                 //script {
@@ -38,7 +48,7 @@ pipeline {
                         
                         // Build Docker image with tag
                         //sh "docker build -t $REGISTRY/$IMAGE_NAME:$IMAGE_TAG ."
-                        sh "docker build -t $IMAGE_NAME:$IMAGE_TAG ."
+                        //sh "docker build -t $IMAGE_NAME:$IMAGE_TAG ."
 
                         // Push the image to DockerHub
                         //sh "docker push $REGISTRY/$IMAGE_NAME:$IMAGE_TAG"
