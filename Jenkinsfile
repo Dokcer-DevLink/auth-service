@@ -2,13 +2,10 @@ pipeline {
     agent any
 
     environment {
-        // Define environment variables
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub') // Replace with your Jenkins credentials ID for DockerHub
-        IMAGE_NAME = 'digitaltulbo/jenkins-cicd' // Your DockerHub repository name
-        IMAGE_TAG = 'latest' // Replace with your desired tag name, or use dynamic values like ${BUILD_NUMBER}
-        REGISTRY = 'docker.io' // DockerHub registry
-    }
-
+        imagename = "digitaltulbo/jenkins-cicd"
+        registryCredential = 'dockerhub'
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub')
+    
     stages {
         stage('Checkout') {
             steps {
@@ -23,8 +20,6 @@ pipeline {
         }
         stage('Docker Build and Push') {
             steps {
-                script {
-                    withCredentials([usernamePassword(credentialsId: DOCKERHUB_CREDENTIALS, usernameVariable: 'DOCKERHUB_USER', passwordVariable: 'DOCKERHUB_PASS')]) {
                         // Build Docker image
                         sh "docker build -t $IMAGE_NAME:$IMAGE_TAG ."
 
@@ -35,8 +30,7 @@ pipeline {
                         sh "docker push $IMAGE_NAME:$IMAGE_TAG"
 
                         // Logout from DockerHub
-                        sh "docker logout"
-                    }
+                        sh "docker logout"                    
                 }
             }
         }
