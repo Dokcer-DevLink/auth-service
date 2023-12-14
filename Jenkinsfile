@@ -2,7 +2,7 @@ pipeline {
     agent any
 
      environment {
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub')
+        DOCKERHUB_CREDENTIALS = 'docerhub'
         IMAGE_NAME = 'digitaltulbo/jenkins-cicd'
         IMAGE_TAG = "${BUILD_NUMBER}"
     }
