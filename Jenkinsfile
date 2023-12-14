@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         // Define environment variables
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub') // Replace with your Jenkins credentials ID for DockerHub
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub-jenkins') // Replace with your Jenkins credentials ID for DockerHub
         IMAGE_NAME = 'digitaltulbo/jenkins-cicd' // Your DockerHub repository name
         IMAGE_TAG = 'tagname' // Replace with your desired tag name, or use dynamic values like ${BUILD_NUMBER}
         REGISTRY = 'docker.io' // DockerHub registry
