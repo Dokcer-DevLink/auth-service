@@ -5,7 +5,7 @@ pipeline {
         imagename = "digitaltulbo/jenkins-cicd"
         registryCredential = 'dockerhub'
         DOCKERHUB_CREDENTIALS = credentials('dockerhub')
-    
+    }
     stages {
         stage('Checkout') {
             steps {
@@ -35,4 +35,3 @@ pipeline {
             }
         }
     }
-}
