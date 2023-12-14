@@ -18,7 +18,8 @@ pipeline {
         }
         stage('Build') {
             steps {
-                sh './gradlew clean build --warning-mode all' 
+                // sh './gradlew clean build --warning-mode all' 
+                sh './gradlew bootJar'
                 
                 // Build your Java application (e.g., using Maven or Gradle)
                 // Example: sh 'mvn clean package'
