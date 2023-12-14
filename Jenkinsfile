@@ -3,10 +3,10 @@ pipeline {
 
     environment {
         // Define environment variables
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub-jenkins') // Replace with your Jenkins credentials ID for DockerHub
-        //DOCKERHUB_CREDENTIALS = 'dockerhub-jenkins' // Replace with your Jenkins credentials ID for DockerHub
+        //DOCKERHUB_CREDENTIALS = credentials('dockerhub-jenkins') // Replace with your Jenkins credentials ID for DockerHub
+        DOCKERHUB_CREDENTIALS = 'dockerhub-jenkins' // Replace with your Jenkins credentials ID for DockerHub
         //IMAGE_NAME = 'digitaltulbo/jenkins-cicd' // Your DockerHub repository name
-        MAGE_NAME = 'lordofkangs/jenkins-cicd' // Your DockerHub repository name
+        IMAGE_NAME = 'lordofkangs/jenkins-cicd' // Your DockerHub repository name
         IMAGE_TAG = 'tagname' // Replace with your desired tag name, or use dynamic values like ${BUILD_NUMBER}
         REGISTRY = 'docker.io' // DockerHub registry
     }
@@ -37,10 +37,13 @@ pipeline {
                         //sh "echo $DOCKERHUB_PASS | docker login $REGISTRY -u $DOCKERHUB_USER --password-stdin"
                         
                         // Build Docker image with tag
-                        sh "docker build -t $REGISTRY/$IMAGE_NAME:$IMAGE_TAG ."
-                        
+                        //sh "docker build -t $REGISTRY/$IMAGE_NAME:$IMAGE_TAG ."
+                        sh "docker build -t $IMAGE_NAME:$IMAGE_TAG ."
+
                         // Push the image to DockerHub
-                        sh "docker push $REGISTRY/$IMAGE_NAME:$IMAGE_TAG"
+                        //sh "docker push $REGISTRY/$IMAGE_NAME:$IMAGE_TAG"
+                        sh "docker push $IMAGE_NAME:$IMAGE_TAG"
+
                     }
                 }
             }
