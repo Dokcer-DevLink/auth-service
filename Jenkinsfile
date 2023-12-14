@@ -29,7 +29,7 @@ pipeline {
         }
         stage('Docker Build and Push') {
             steps {
-                script {
+                //script {
                     // Login to DockerHub
                     withDockerRegistry([ credentialsId: DOCKERHUB_CREDENTIALS, url: "" ]){
                     //withCredentials([usernamePassword(credentialsId: DOCKERHUB_CREDENTIALS, usernameVariable: 'DOCKERHUB_USER', passwordVariable: 'DOCKERHUB_PASS')]) {
@@ -44,7 +44,7 @@ pipeline {
                         //sh "docker push $REGISTRY/$IMAGE_NAME:$IMAGE_TAG"
                         sh "docker push $IMAGE_NAME:$IMAGE_TAG"
 
-                    }
+                    //}
                 }
             }
         }
