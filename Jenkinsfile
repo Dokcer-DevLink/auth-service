@@ -1,15 +1,14 @@
 pipeline {
     agent any
 
-    environment {
-        imagename = "digitaltulbo/jenkins-cicd"
-        registryCredential = 'dockerhub'
+     environment {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub')
+        IMAGE_NAME = 'digitaltulbo/jenkins-cicd'
+        IMAGE_TAG = "${BUILD_NUMBER}"
     }
     stages {
         stage('Checkout') {
             steps {
-                // Checkout the Git repository
                 checkout scm
             }
         }
@@ -18,20 +17,22 @@ pipeline {
                 sh './gradlew bootJar'
             }
         }
-        stage('Docker Build and Push') {
+ stage('Docker Build and Push') {
             steps {
-                        // Build Docker image
-                        sh "docker build -t $IMAGE_NAME:$IMAGE_TAG ."
-
-                        // Login to DockerHub
+                script {
+                    withCredentials([usernamePassword(credentialsId: DOCKERHUB_CREDENTIALS, usernameVariable: 'DOCKERHUB_USER', passwordVariable: 'DOCKERHUB_PASS')]) {
                         sh "echo $DOCKERHUB_PASS | docker login -u $DOCKERHUB_USER --password-stdin"
-
-                        // Push the image to DockerHub
+                        sh "docker build -t $IMAGE_NAME:$IMAGE_TAG ."
                         sh "docker push $IMAGE_NAME:$IMAGE_TAG"
-
-                        // Logout from DockerHub
-                        sh "docker logout"                    
+                        sh "docker logout"
+                    }
                 }
             }
         }
     }
+
+    post {
+        always {
+        }
+    }
+}
