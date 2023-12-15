@@ -59,10 +59,10 @@ pipeline {
         }
     }
 
-    // post {
-    //     always {
-    //         // Logout from DockerHub
-    //         sh "docker logout $REGISTRY"
-    //     }
-    // }
+    post {
+        always {
+            // Logout from DockerHub
+            sh "docker logout $REGISTRY"
+        }
+    }
 }
