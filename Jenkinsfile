@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        // Define environment variables
+        // Define environment variables.
         //DOCKERHUB_CREDENTIALS = credentials('dockerhub') // Replace with your Jenkins credentials ID for DockerHub
         DOCKERHUB_CREDENTIALS = 'dockerhub' // Replace with your Jenkins credentials ID for DockerHub..
         //IMAGE_NAME = 'digitaltulbo/jenkins-cicd' // Your DockerHub repository name.
