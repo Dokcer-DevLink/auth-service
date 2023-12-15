@@ -18,13 +18,21 @@ pipeline {
                 checkout scm
             }
         }
-        stage('Build') {
+        stage('Spring APP Build') {
             steps {
                 // sh './gradlew clean build --warning-mode all' 
                 sh './gradlew bootJar'
                 
                 // Build your Java application (e.g., using Maven or Gradle)
                 // Example: sh 'mvn clean package'
+            }
+        }
+
+        stage('Docker Image Build') {
+            steps {
+                // Build Docker image with tag
+                //sh "docker build -t $REGISTRY/$IMAGE_NAME:$IMAGE_TAG ."
+                sh "docker build -t $IMAGE_NAME:$IMAGE_TAG ."
             }
         }
 
@@ -39,7 +47,7 @@ pipeline {
                         
                         // Build Docker image with tag
                         //sh "docker build -t $REGISTRY/$IMAGE_NAME:$IMAGE_TAG ."
-                        sh "docker build -t $IMAGE_NAME:$IMAGE_TAG ."
+                        //sh "docker build -t $IMAGE_NAME:$IMAGE_TAG ."
 
                         // Push the image to DockerHub
                         //sh "docker push $REGISTRY/$IMAGE_NAME:$IMAGE_TAG"
