@@ -35,7 +35,7 @@ pipeline {
                     withDockerRegistry([ credentialsId: DOCKERHUB_CREDENTIALS, url: "" ]){
                     //withCredentials([usernamePassword(credentialsId: DOCKERHUB_CREDENTIALS, usernameVariable: 'DOCKERHUB_USER', passwordVariable: 'DOCKERHUB_PASS')]) {
                         
-                        sh "echo $DOCKERHUB_PASS | docker login $REGISTRY -u $DOCKERHUB_USER --password-stdin"
+                        //sh "echo $DOCKERHUB_PASS | docker login $REGISTRY -u $DOCKERHUB_USER --password-stdin"
                         
                         // Build Docker image with tag
                         //sh "docker build -t $REGISTRY/$IMAGE_NAME:$IMAGE_TAG ."
