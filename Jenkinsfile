@@ -3,12 +3,14 @@ pipeline {
 
     environment {
         // Define environment variables.
-        //DOCKERHUB_CREDENTIALS = credentials('dockerhub') // Replace with your Jenkins credentials ID for DockerHub
+        dockerHubRegistry = 'lordofkangs/k8s'
         DOCKERHUB_CREDENTIALS = 'dockerhub' // Replace with your Jenkins credentials ID for DockerHub..
         //IMAGE_NAME = 'digitaltulbo/jenkins-cicd' // Your DockerHub repository name.
         IMAGE_NAME = 'lordofkangs/auth-service' // Your DockerHub repository name
         IMAGE_TAG = 'tagname' // Replace with your desired tag name, or use dynamic values like ${BUILD_NUMBER}
         REGISTRY = 'docker.io' // DockerHub registry
+        githubCredential = 'digitaltulbo'
+
     }
 
     stages {
@@ -32,26 +34,33 @@ pipeline {
             steps {
                 // Build Docker image with tag
                 //sh "docker build -t $REGISTRY/$IMAGE_NAME:$IMAGE_TAG ."
-                sh "docker build -t $IMAGE_NAME:$IMAGE_TAG ."
+                sh "docker build . -t ${dockerHubRegistry}:${currentBuild.number}"
+                sh "docker build . -t ${dockerHubRegistry}:latest"
             }
         }
 
-        stage('Docker Build and Push') {
+        stage('Docker Image Push') {
             steps {
                 //script {
                     // Login to DockerHub
                     withDockerRegistry([ credentialsId: DOCKERHUB_CREDENTIALS, url: "" ]){
-                        sh "docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD $REGISTRY"
-                        sh "docker push $IMAGE_NAME:$IMAGE_TAG"
+                    sh "docker push ${dockerHubRegistry}:${currentBuild.number}"
+                    sh "docker push ${dockerHubRegistry}:latest"
+
+                    sleep 10 /* Wait uploading */                    
                 }
             }
             post {
                 failure {
-                    echo 'Docker Image Push failure !'
-                    sh "docker rmi $IMAGE_NAME:$IMAGE_TAG"
+                  echo 'Docker Image Push failure !'
+                  sh "docker rmi ${dockerHubRegistry}:${currentBuild.number}"
+                  sh "docker rmi ${dockerHubRegistry}:latest"
                 }
                 success {
                     echo 'Docker image push success !'
+                    sh "docker rmi ${dockerHubRegistry}:${currentBuild.number}"
+                    sh "docker rmi ${dockerHubRegistry}:latest"
+
                 }
             }
         }
