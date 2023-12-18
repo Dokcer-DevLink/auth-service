@@ -1,3 +1,5 @@
+server:
+  port: 0
 
 spring:
   application:
@@ -33,3 +35,12 @@ jwt:
 logging:
   level:
     com.example: DEBUG
+
+eureka:
+  instance:
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://127.0.0.1:8761/eureka
