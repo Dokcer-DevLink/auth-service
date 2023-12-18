@@ -85,7 +85,7 @@ stage('K8S Manifest Update') {
             }
             post {
                 failure {
-                    echo 'K8S Manifest Update failure !'
+                    echo 'K8S Manifest Update failure '
                 }
                 success {
                     echo 'K8S Manifest Update success !'
