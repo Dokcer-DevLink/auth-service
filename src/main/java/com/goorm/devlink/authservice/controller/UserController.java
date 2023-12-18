@@ -22,7 +22,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/auth-service/api")
+@RequestMapping("/api")
 public class UserController {
 
     private final UserService userService;
