@@ -4,6 +4,9 @@ server:
 spring:
   application:
     name: auth-service
+  config:
+    activate:
+      on-profile: default
   h2:
     console:
       enabled: true
