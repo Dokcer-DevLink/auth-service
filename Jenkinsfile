@@ -41,49 +41,35 @@ pipeline {
                 //script {
                     // Login to DockerHub
                     withDockerRegistry([ credentialsId: DOCKERHUB_CREDENTIALS, url: "" ]){
-                    //withCredentials([usernamePassword(credentialsId: DOCKERHUB_CREDENTIALS, usernameVariable: 'DOCKERHUB_USER', passwordVariable: 'DOCKERHUB_PASS')]) {
-                        
-                        //sh "echo $DOCKERHUB_PASS | docker login $REGISTRY -u $DOCKERHUB_USER --password-stdin"
-                        
-                        // Build Docker image with tag
-                        //sh "docker build -t $REGISTRY/$IMAGE_NAME:$IMAGE_TAG ."
-                        //sh "docker build -t $IMAGE_NAME:$IMAGE_TAG ."
-
-                        // Push the image to DockerHub
-                        //sh "docker push $REGISTRY/$IMAGE_NAME:$IMAGE_TAG"
+                        sh "docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD $REGISTRY"
                         sh "docker push $IMAGE_NAME:$IMAGE_TAG"
-
-                  //  }
                 }
             }
             post {
                 failure {
                     echo 'Docker Image Push failure !'
-                    sh "docker rmi ${dockerHubRegistry}:${currentBuild.number}"
-                    sh "docker rmi ${dockerHubRegistry}:latest"
+                    sh "docker rmi $IMAGE_NAME:$IMAGE_TAG"
                 }
                 success {
                     echo 'Docker image push success !'
-                    sh "docker rmi ${dockerHubRegistry}:${currentBuild.number}"
-                    sh "docker rmi ${dockerHubRegistry}:latest"
                 }
             }
         }
-    }
-    stage('K8S Manifest Update') {
+    
+stage('K8S Manifest Update') {
             steps {
                 sh "ls"
                 sh 'mkdir -p gitOpsRepo'
-                dir("gitOpsRepo") {
-                    git branch: "main",
-                    credentialsId: 'githubCredential', // 여기서 'githubCredential'은 실제 크레덴셜 ID로 교체해야 합니다.
-                    url: 'https://github.com/Dokcer-DevLink/DevOps.git'
+                dir('gitOpsRepo') {
+                    git branch: 'main',
+                        credentialsId: 'githubCredential',
+                        url: 'https://github.com/Dokcer-DevLink/DevOps.git'
                     
-                    sh "sed -i 's/k8s:.*\$/k8s:${currentBuild.number}/' deployment.yaml"
+                    sh "sed -i 's/k8s:.*\$/k8s:${BUILD_NUMBER}/' deployment.yaml"
                     sh "git add deployment.yaml"
-                    sh "git commit -m '[UPDATE] k8s ${currentBuild.number} image versioning'"
+                    sh "git commit -m '[UPDATE] k8s ${BUILD_NUMBER} image versioning'"
                     withCredentials([usernamePassword(credentialsId: 'githubCredential', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
-                        sh "git remote set-url origin https://$GIT_USERNAME:$GIT_PASSWORD@github.com:Dokcer-DevLink/DevOps.git/manifests"
+                        sh "git remote set-url origin https://$GIT_USERNAME:$GIT_PASSWORD@github.com/Dokcer-DevLink/DevOps.git/manifests"
                         sh "git push -u origin main"
                     }
                 }
@@ -96,12 +82,13 @@ pipeline {
                     echo 'K8S Manifest Update success !'
                 }
             }
+        }
+    }
+    
     post {
         always {
             // Logout from DockerHub
-            sh "docker logout $REGISTRY"
+            sh "docker logout"
         }
     }
-    }
 }
-
