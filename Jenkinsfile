@@ -102,5 +102,6 @@ pipeline {
             sh "docker logout $REGISTRY"
         }
     }
+    }
 }
-}
+
