@@ -27,7 +27,7 @@ bootJar {
 }
 
 ext {
-    set('springCloudVersion', "2021.0.8")
+    set('springCloudVersion', "2020.0.3")
 }
 
 repositories {
