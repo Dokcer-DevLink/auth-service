@@ -17,7 +17,6 @@ spring:
         show_sql: true
         format_sql: true
         dialect: org.hibernate.dialect.MySQL5InnoDBDialect
-    defer-datasource-initialization: true
   redis:
     host: redis-service
     port: 6379

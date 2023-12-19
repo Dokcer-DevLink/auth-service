@@ -1,6 +1,7 @@
 package com.goorm.devlink.authservice.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.goorm.devlink.authservice.entity.constant.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -45,12 +46,16 @@ public class User extends AuditingFields {
     @Column(name = "is_deleted", columnDefinition = "boolean default false NOT NULL")
     private boolean isDeleted;
 
-    @ManyToMany
-    @JoinTable(
-            name = "user_authority",
-            joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "user_id")},
-            inverseJoinColumns = {@JoinColumn(name = "authority_name", referencedColumnName = "authority_name")})
-    private Set<Authority> authorities;
+//    @ManyToMany
+//    @JoinTable(
+//            name = "user_authority",
+//            joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "user_id")},
+//            inverseJoinColumns = {@JoinColumn(name = "authority_name", referencedColumnName = "authority_name")})
+//    private Set<Authority> authorities;
+
+    @Column(name = "role")
+    @Enumerated(EnumType.STRING)
+    private UserRole role;
 
     public void modifyUserInfo(String nickname, String password) {
         if(nickname != null) {

@@ -15,7 +15,6 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: 1234
-    initialization-mode: always
   jpa:
     hibernate:
       ddl-auto: create
@@ -24,7 +23,6 @@ spring:
         format_sql: true
         show_sql: true
         dialect: org.hibernate.dialect.MySQL5InnoDBDialect
-    defer-datasource-initialization: true
   redis:
     port: 6379
     host: 127.0.0.1
