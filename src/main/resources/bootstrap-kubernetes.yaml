@@ -1,7 +1,7 @@
 spring:
-  config:
-    activate:
-      on-profile: kubernetes
+  #  config:
+#    activate:
+#      on-profile: kubernetes
   cloud:
     config:
       enabled: false
