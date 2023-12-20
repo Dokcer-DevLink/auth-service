@@ -57,6 +57,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserDto getUserByEmail(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(() ->
+                new AuthServiceException(ErrorCode.USER_NOT_FOUND));
+
+        if(!user.isActivated()) {
+            throw new AuthServiceException(ErrorCode.USER_NOT_FOUND);
+        }
+
+        return new ModelMapper().map(user, UserDto.class);
+    }
+
+    @Override
     public List<UserDto> getUsers() {
         List<User> userList = userRepository.findAll();
 
