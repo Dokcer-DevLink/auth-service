@@ -10,6 +10,8 @@ pipeline {
         IMAGE_TAG = 'tagname' // Replace with your desired tag name, or use dynamic values like ${BUILD_NUMBER}
         REGISTRY = 'docker.io' // DockerHub registry
         githubCredential = 'digitaltulbo'
+        gitEmail = 'djzepssa@gmail.com'
+        gitName = 'digitaltulbo'
 
     }
 
@@ -75,6 +77,9 @@ stage('K8S Manifest Update') {
                     git branch: 'main',
                         credentialsId: 'githubCredential',
                         url: 'https://github.com/Dokcer-DevLink/DevOps.git'
+
+                    sh "git config --global user.email ${gitEmail}"
+                    sh "git config --global user.name ${gitName}"
                     
                     sh "sed -i 's/k8s:.*\$/k8s:${currentBuild.number}/' ./manifests/deployment.yaml"
                     sh "git add ."
