@@ -40,9 +40,12 @@ public class UserController {
     public ResponseEntity<TokenDto> login(@RequestBody UserLoginRequest request) {
         TokenDto tokenDto = authService.authorize(request.getEmail(), request.getPassword());
 
+        UserDto user = userService.getUserByEmail(request.getEmail());
+
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", tokenDto.getAccessToken());
         headers.add("refreshToken", tokenDto.getRefreshToken());
+        headers.add("userUuid", user.getUserUuid());
 
         return new ResponseEntity<>(headers, HttpStatus.OK);
     }

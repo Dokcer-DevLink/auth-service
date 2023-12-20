@@ -10,6 +10,8 @@ public interface UserService {
 
     UserDto getUserByUserUuid(String userUuid);
 
+    UserDto getUserByEmail(String email);
+
     List<UserDto> getUsers();
 
     void modifyUserinfo(String email, String userUuid, String nickname, String password);
