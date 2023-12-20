@@ -17,7 +17,7 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Where(clause = "is_deleted=false")
+@Where(clause = "is_deleted=false or activated=true")
 public class User extends AuditingFields {
 
     @JsonIgnore

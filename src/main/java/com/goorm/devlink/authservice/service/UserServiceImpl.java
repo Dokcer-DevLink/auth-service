@@ -49,10 +49,6 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByUserUuid(userUuid).orElseThrow(() ->
             new AuthServiceException(ErrorCode.USER_NOT_FOUND));
 
-        if(!user.isActivated()) {
-            throw new AuthServiceException(ErrorCode.USER_NOT_FOUND);
-        }
-
         return new ModelMapper().map(user, UserDto.class);
     }
 
@@ -60,10 +56,6 @@ public class UserServiceImpl implements UserService {
     public UserDto getUserByEmail(String email) {
         User user = userRepository.findByEmail(email).orElseThrow(() ->
                 new AuthServiceException(ErrorCode.USER_NOT_FOUND));
-
-        if(!user.isActivated()) {
-            throw new AuthServiceException(ErrorCode.USER_NOT_FOUND);
-        }
 
         return new ModelMapper().map(user, UserDto.class);
     }
