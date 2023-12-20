@@ -85,7 +85,7 @@ stage('K8S Manifest Update') {
                     sh "git add ."
                     sh "git commit -m '[UPDATE] k8s ${currentBuild.number} image versioning'"
                     withCredentials([usernamePassword(credentialsId: 'githubCredential', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
-                        sh "git remote set-url origin https://$GIT_USERNAME:$GIT_PASSWORD@github.com/Dokcer-DevLink/DevOps.git/manifests"
+                        sh "git remote set-url origin https://github.com/Dokcer-DevLink/DevOps"
                         sh "git push -u origin main"
                     }
                 }
