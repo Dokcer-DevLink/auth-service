@@ -3,16 +3,12 @@ pipeline {
 
     environment {
         // Define environment variables.
-        dockerHubRegistry = 'lordofkangs/k8s'
+        dockerHubRegistry = 'lordofkangs'
         DOCKERHUB_CREDENTIALS = 'dockerhub' // Replace with your Jenkins credentials ID for DockerHub..
-        //IMAGE_NAME = 'digitaltulbo/jenkins-cicd' // Your DockerHub repository name.
-        IMAGE_NAME = 'lordofkangs/auth-service' // Your DockerHub repository name
+        IMAGE_NAME = 'auth-service' // Your DockerHub repository name
         IMAGE_TAG = 'tagname' // Replace with your desired tag name, or use dynamic values like ${BUILD_NUMBER}
         REGISTRY = 'docker.io' // DockerHub registry
-        // githubCredential = 'digitaltulbo'
         githubCredential = 'github_cred'
-        // gitEmail = 'djzepssa@gmail.com'
-        // gitName = 'digitaltulbo'
         gitEmail = 'moonsung0331@gmail.com'
         gitName = 'moonstar0331'
 
@@ -39,8 +35,8 @@ pipeline {
             steps {
                 // Build Docker image with tag
                 //sh "docker build -t $REGISTRY/$IMAGE_NAME:$IMAGE_TAG ."
-                sh "docker build . -t ${dockerHubRegistry}:${currentBuild.number}"
-                sh "docker build . -t ${dockerHubRegistry}:latest"
+                sh "docker build -t ${dockerHubRegistry}/${IMAGE_NAME}:${currentBuild.number} ."
+                sh "docker build -t ${dockerHubRegistry}/${IMAGE_NAME}:latest ."
             }
         }
 
@@ -49,8 +45,8 @@ pipeline {
                 //script {
                     // Login to DockerHub
                     withDockerRegistry([ credentialsId: DOCKERHUB_CREDENTIALS, url: "" ]){
-                    sh "docker push ${dockerHubRegistry}:${currentBuild.number}"
-                    sh "docker push ${dockerHubRegistry}:latest"
+                    sh "docker push ${dockerHubRegistry}/${IMAGE_NAME}:${currentBuild.number}"
+                    sh "docker push ${dockerHubRegistry}/${IMAGE_NAME}:latest"
 
                     sleep 10 /* Wait uploading */                    
                 }
@@ -58,14 +54,14 @@ pipeline {
             post {
                 failure {
                   echo 'Docker Image Push failure !'
-                  // sh "docker rmi ${dockerHubRegistry}:${currentBuild.number}"
-                  // sh "docker rmi ${dockerHubRegistry}:latest"
+                  // sh "docker rmi ${dockerHubRegistry}/${IMAGE_NAME}:${currentBuild.number}"
+                  // sh "docker rmi ${dockerHubRegistry}/${IMAGE_NAME}:latest"
                   sh "docker image prune -f"
                 }
                 success {
                     echo 'Docker image push success !'
-                    // sh "docker rmi ${dockerHubRegistry}:${currentBuild.number}"
-                    // sh "docker rmi ${dockerHubRegistry}:latest"
+                    // sh "docker rmi ${dockerHubRegistry}/${IMAGE_NAME}:${currentBuild.number}"
+                    // sh "docker rmi ${dockerHubRegistry}/${IMAGE_NAME}:latest"
                     sh "docker image prune -f"
 
                 }
