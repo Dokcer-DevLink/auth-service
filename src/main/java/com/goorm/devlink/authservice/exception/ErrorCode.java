@@ -13,6 +13,7 @@ public enum ErrorCode {
     INVALID_USER_UUID(HttpStatus.UNAUTHORIZED, "User UUID is invalid"),
     INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "Password is invalid"),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error"),
+    PROFILE_CREATION_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Profile Creation Error"),
     INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "Access Token is invalid"),
     INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "Refresh Token is invalid"),
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "Article not founded"),
