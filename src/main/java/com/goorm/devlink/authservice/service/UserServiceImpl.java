@@ -5,6 +5,8 @@ import com.goorm.devlink.authservice.entity.User;
 import com.goorm.devlink.authservice.entity.constant.UserRole;
 import com.goorm.devlink.authservice.exception.AuthServiceException;
 import com.goorm.devlink.authservice.exception.ErrorCode;
+import com.goorm.devlink.authservice.openfeign.ProfileServiceClient;
+import com.goorm.devlink.authservice.openfeign.vo.reqeust.ProfileCreateReqeust;
 import com.goorm.devlink.authservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +26,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ProfileServiceClient profileServiceClient;
 
     @Override
     @Transactional
@@ -42,6 +45,12 @@ public class UserServiceImpl implements UserService {
                 .build();
 
         userRepository.save(user);
+
+        try {
+            profileServiceClient.createProfile(new ProfileCreateReqeust(user.getNickname()), user.getUserUuid());
+        } catch (Exception e) {
+            throw new AuthServiceException(ErrorCode.PROFILE_CREATION_ERROR);
+        }
     }
 
     @Override
