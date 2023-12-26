@@ -2,13 +2,13 @@ server:
   port: 8080
 
 spring:
-  security:
-    oauth2:
-      client:
-        registration:
-          github:
-            client-id: e67ba6052e23676fbc3d
-            client-secret: d2a204d51d9c7d024eaabd16a29542177ed85922
+#  security:
+#    oauth2:
+#      client:
+#        registration:
+#          github:
+#            client-id: e67ba6052e23676fbc3d
+#            client-secret: d2a204d51d9c7d024eaabd16a29542177ed85922
   application:
     name: auth-service
   config:
