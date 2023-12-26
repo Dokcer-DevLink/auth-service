@@ -4,16 +4,15 @@ import com.goorm.devlink.authservice.jwt.JwtAccessDeniedHandler;
 import com.goorm.devlink.authservice.jwt.JwtAuthenticationEntryPoint;
 import com.goorm.devlink.authservice.jwt.JwtSecurityConfig;
 import com.goorm.devlink.authservice.jwt.TokenProvider;
+import com.goorm.devlink.authservice.service.CustomOAuth2UserService;
+import com.goorm.devlink.authservice.util.OAuth2SuccessHandler;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -24,10 +23,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final OAuth2SuccessHandler successHandler;
 
     @Override
     public void configure(WebSecurity web) throws Exception {
@@ -55,8 +52,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/login").permitAll()
                 .antMatchers("/api/logout").permitAll()
                 .antMatchers("/api/reissue").permitAll()
+                .antMatchers("/login/**").permitAll()
+                .antMatchers("/home/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .apply(new JwtSecurityConfig(tokenProvider));
+                .apply(new JwtSecurityConfig(tokenProvider))
+                .and()
+                .oauth2Login()
+                .authorizationEndpoint()
+                .baseUri("/login")
+                .and()
+                .redirectionEndpoint()
+                .baseUri("/login/oauth2/code/github")
+                .and()
+                .successHandler(successHandler)
+                .userInfoEndpoint()
+                .userService(customOAuth2UserService);
     }
 }
