@@ -1,12 +1,13 @@
 package com.goorm.devlink.authservice.service;
 
 import com.goorm.devlink.authservice.dto.UserDto;
+import com.goorm.devlink.authservice.entity.constant.JoinType;
 
 import java.util.List;
 
 public interface UserService {
 
-    void join(UserDto userDto);
+    void join(UserDto userDto, JoinType joinType);
 
     UserDto getUserByUserUuid(String userUuid);
 

@@ -2,6 +2,7 @@ package com.goorm.devlink.authservice.service;
 
 import com.goorm.devlink.authservice.dto.UserDto;
 import com.goorm.devlink.authservice.entity.User;
+import com.goorm.devlink.authservice.entity.constant.JoinType;
 import com.goorm.devlink.authservice.entity.constant.UserRole;
 import com.goorm.devlink.authservice.exception.AuthServiceException;
 import com.goorm.devlink.authservice.exception.ErrorCode;
@@ -30,7 +31,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void join(UserDto userDto) {
+    public void join(UserDto userDto, JoinType joinType) {
         if(userRepository.findByEmail(userDto.getEmail()).orElse(null) != null) {
             throw new AuthServiceException(ErrorCode.DUPLICATED_USER_EMAIL);
         }
@@ -47,7 +48,12 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
 
         try {
-            profileServiceClient.createProfile(new ProfileCreateReqeust(user.getNickname()), user.getUserUuid());
+            if(joinType == JoinType.HOMEPAGE) {
+                profileServiceClient.createProfile(new ProfileCreateReqeust(user.getNickname(), null), user.getUserUuid());
+            } else {
+                profileServiceClient.createProfile(new ProfileCreateReqeust(user.getNickname(), user.getEmail()), user.getUserUuid());
+            }
+
         } catch (Exception e) {
             throw new AuthServiceException(ErrorCode.PROFILE_CREATION_ERROR);
         }

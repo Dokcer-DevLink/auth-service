@@ -2,6 +2,7 @@ package com.goorm.devlink.authservice.util;
 
 import com.goorm.devlink.authservice.dto.TokenDto;
 import com.goorm.devlink.authservice.dto.UserDto;
+import com.goorm.devlink.authservice.entity.constant.JoinType;
 import com.goorm.devlink.authservice.jwt.TokenProvider;
 import com.goorm.devlink.authservice.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +41,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 .build();
 
         // 회원가입 로직
-        userService.join(userDto);
+        userService.join(userDto, JoinType.GITHUB);
 
         // JWT 토큰 발행 로직
         log.info("토큰 발행 시작");

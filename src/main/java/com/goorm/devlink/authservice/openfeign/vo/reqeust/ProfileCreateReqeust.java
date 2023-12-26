@@ -9,4 +9,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ProfileCreateReqeust {
     private String nickname;
+    private String githubEmail;
 }
