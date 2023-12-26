@@ -1,12 +1,9 @@
 package com.goorm.devlink.authservice.util;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.goorm.devlink.authservice.dto.TokenDto;
-import com.goorm.devlink.authservice.entity.User;
-import com.goorm.devlink.authservice.entity.constant.UserRole;
+import com.goorm.devlink.authservice.dto.UserDto;
 import com.goorm.devlink.authservice.jwt.TokenProvider;
-import com.goorm.devlink.authservice.repository.UserRepository;
-import com.goorm.devlink.authservice.service.AuthService;
+import com.goorm.devlink.authservice.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -20,7 +17,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -29,9 +25,7 @@ import java.util.stream.Collectors;
 public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final TokenProvider tokenProvider;
-    private final UserRepository userRepository;
-    private final ObjectMapper objectMapper;
-    private final AuthService authService;
+    private final UserService userService;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -39,17 +33,17 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         log.info("Principal에서 꺼낸 OAuth2User = {}", oAuth2User);
 
-        User user = new User();
-        user.setEmail(oAuth2User.getAttribute("email"));
-        user.setNickname(oAuth2User.getAttribute("nickname"));
-        user.setRole(UserRole.USER);
-        user.setUserUuid(UUID.randomUUID().toString());
-        user.setPassword("");
+        UserDto userDto = UserDto.builder()
+                .email(oAuth2User.getAttribute("email"))
+                .nickname(oAuth2User.getAttribute("nickname"))
+                .password("")
+                .build();
 
-        userRepository.save(user);
+        // 회원가입 로직
+        userService.join(userDto);
 
+        // JWT 토큰 발행 로직
         log.info("토큰 발행 시작");
-
         String authorities = getAuthorities(authentication);
         TokenDto token = tokenProvider.createToken(oAuth2User.getAttribute("email"), authorities);
 
