@@ -8,6 +8,7 @@ import com.goorm.devlink.authservice.service.UserService;
 import com.goorm.devlink.authservice.vo.request.UserJoinReqeust;
 import com.goorm.devlink.authservice.vo.request.UserLoginRequest;
 import com.goorm.devlink.authservice.vo.request.UserModifyRequest;
+import com.goorm.devlink.authservice.vo.response.TokenAndUserUuidResponse;
 import com.goorm.devlink.authservice.vo.response.UserResponse;
 import com.goorm.devlink.authservice.vo.response.UserValidatedResponse;
 import lombok.RequiredArgsConstructor;
@@ -38,22 +39,25 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<TokenDto> login(@RequestBody UserLoginRequest request) {
+    public ResponseEntity<TokenAndUserUuidResponse> login(@RequestBody UserLoginRequest request) {
         TokenDto tokenDto = authService.authorize(request.getEmail(), request.getPassword());
 
         UserDto user = userService.getUserByEmail(request.getEmail());
 
         HttpHeaders headers = new HttpHeaders();
-//        headers.add("Authorization", tokenDto.getAccessToken());
-//        headers.add("refreshToken", tokenDto.getRefreshToken());
-//        headers.add("userUuid", user.getUserUuid());
         headers.set("Authorization", tokenDto.getAccessToken());
         headers.set("refreshToken", tokenDto.getRefreshToken());
         headers.set("userUuid", user.getUserUuid());
 
+        TokenAndUserUuidResponse response = TokenAndUserUuidResponse.builder()
+                .accessToken(tokenDto.getAccessToken())
+                .refreshToken(tokenDto.getRefreshToken())
+                .userUuid(user.getUserUuid())
+                .build();
+
         return ResponseEntity.ok()
                 .headers(headers)
-                .build();
+                .body(response);
 //        return new ResponseEntity<>(headers, HttpStatus.OK);
     }
 
@@ -89,7 +93,7 @@ public class UserController {
         headers.add("accessToken", tokenDto.getAccessToken());
         headers.add("refreshToken", tokenDto.getRefreshToken());
 
-        return new ResponseEntity<>(headers, HttpStatus.OK);
+        return ResponseEntity.ok(tokenDto);
     }
 
     @DeleteMapping("/logout")
