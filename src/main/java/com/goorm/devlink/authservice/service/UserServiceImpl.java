@@ -2,7 +2,6 @@ package com.goorm.devlink.authservice.service;
 
 import com.goorm.devlink.authservice.dto.UserDto;
 import com.goorm.devlink.authservice.entity.User;
-import com.goorm.devlink.authservice.entity.constant.JoinType;
 import com.goorm.devlink.authservice.entity.constant.UserRole;
 import com.goorm.devlink.authservice.exception.AuthServiceException;
 import com.goorm.devlink.authservice.exception.ErrorCode;
@@ -31,7 +30,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void join(UserDto userDto, JoinType joinType) {
+    public void join(UserDto userDto) {
         if(userRepository.findByEmail(userDto.getEmail()).orElse(null) != null) {
             throw new AuthServiceException(ErrorCode.DUPLICATED_USER_EMAIL);
         }
@@ -46,12 +45,30 @@ public class UserServiceImpl implements UserService {
                 .build();
 
         try {
-            if(joinType == JoinType.HOMEPAGE) {
-                profileServiceClient.createProfile(new ProfileCreateReqeust(user.getNickname(), null), user.getUserUuid());
-            } else {
-                profileServiceClient.createProfile(new ProfileCreateReqeust(user.getNickname(), user.getEmail()), user.getUserUuid());
-            }
+            profileServiceClient.createProfile(new ProfileCreateReqeust(user.getNickname(), null), user.getUserUuid());
+            userRepository.save(user);
+        } catch (Exception e) {
+            throw new AuthServiceException(ErrorCode.PROFILE_CREATION_ERROR);
+        }
+    }
 
+    @Override
+    public void joinForGitHub(UserDto userDto, String githubUrl) {
+        if(userRepository.findByEmail(userDto.getEmail()).orElse(null) != null) {
+            throw new AuthServiceException(ErrorCode.DUPLICATED_USER_EMAIL);
+        }
+
+        User user = User.builder()
+                .email(userDto.getEmail())
+                .password(passwordEncoder.encode(userDto.getPassword()))
+                .nickname(userDto.getNickname())
+                .userUuid(UUID.randomUUID().toString())
+                .role(UserRole.USER)
+                .activated(true)
+                .build();
+
+        try {
+            profileServiceClient.createProfile(new ProfileCreateReqeust(user.getNickname(), githubUrl), user.getUserUuid());
             userRepository.save(user);
         } catch (Exception e) {
             throw new AuthServiceException(ErrorCode.PROFILE_CREATION_ERROR);

@@ -2,7 +2,6 @@ package com.goorm.devlink.authservice.controller;
 
 import com.goorm.devlink.authservice.dto.TokenDto;
 import com.goorm.devlink.authservice.dto.UserDto;
-import com.goorm.devlink.authservice.entity.constant.JoinType;
 import com.goorm.devlink.authservice.service.AuthService;
 import com.goorm.devlink.authservice.service.UserService;
 import com.goorm.devlink.authservice.vo.request.UserJoinReqeust;
@@ -33,7 +32,7 @@ public class UserController {
     @PostMapping("/join")
     public ResponseEntity<Void> signUp(@RequestBody UserJoinReqeust reqeust) {
         UserDto userDto = new ModelMapper().map(reqeust, UserDto.class);
-        userService.join(userDto, JoinType.HOMEPAGE);
+        userService.join(userDto);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -58,7 +57,6 @@ public class UserController {
         return ResponseEntity.ok()
                 .headers(headers)
                 .body(response);
-//        return new ResponseEntity<>(headers, HttpStatus.OK);
     }
 
     @GetMapping("/users/{userUuid}")
