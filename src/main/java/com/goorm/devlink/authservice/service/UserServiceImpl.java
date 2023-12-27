@@ -45,8 +45,6 @@ public class UserServiceImpl implements UserService {
                 .activated(true)
                 .build();
 
-        userRepository.save(user);
-
         try {
             if(joinType == JoinType.HOMEPAGE) {
                 profileServiceClient.createProfile(new ProfileCreateReqeust(user.getNickname(), null), user.getUserUuid());
@@ -54,6 +52,7 @@ public class UserServiceImpl implements UserService {
                 profileServiceClient.createProfile(new ProfileCreateReqeust(user.getNickname(), user.getEmail()), user.getUserUuid());
             }
 
+            userRepository.save(user);
         } catch (Exception e) {
             throw new AuthServiceException(ErrorCode.PROFILE_CREATION_ERROR);
         }

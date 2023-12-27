@@ -44,11 +44,17 @@ public class UserController {
         UserDto user = userService.getUserByEmail(request.getEmail());
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", tokenDto.getAccessToken());
-        headers.add("refreshToken", tokenDto.getRefreshToken());
-        headers.add("userUuid", user.getUserUuid());
+//        headers.add("Authorization", tokenDto.getAccessToken());
+//        headers.add("refreshToken", tokenDto.getRefreshToken());
+//        headers.add("userUuid", user.getUserUuid());
+        headers.set("Authorization", tokenDto.getAccessToken());
+        headers.set("refreshToken", tokenDto.getRefreshToken());
+        headers.set("userUuid", user.getUserUuid());
 
-        return new ResponseEntity<>(headers, HttpStatus.OK);
+        return ResponseEntity.ok()
+                .headers(headers)
+                .build();
+//        return new ResponseEntity<>(headers, HttpStatus.OK);
     }
 
     @GetMapping("/users/{userUuid}")
