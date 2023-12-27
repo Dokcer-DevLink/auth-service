@@ -17,6 +17,7 @@ public class OAuth2Attribute {
     private String attributeKey;
     private String email;
     private String nickname;
+    private String githubUrl;
 
     private Long id;
 
@@ -38,6 +39,7 @@ public class OAuth2Attribute {
                 .id(Long.valueOf(id))
                 .nickname((String) attributes.get("login"))
                 .email((String) attributes.get("email"))
+                .githubUrl((String) attributes.get("html_url"))
                 .attributes(attributes)
                 .attributeKey(attributeKey)
                 .build();
@@ -49,6 +51,7 @@ public class OAuth2Attribute {
         map.put("key", attributeKey);
         map.put("nickname", nickname);
         map.put("email", email);
+        map.put("url", githubUrl);
         map.put("id", id);
         return map;
     }
