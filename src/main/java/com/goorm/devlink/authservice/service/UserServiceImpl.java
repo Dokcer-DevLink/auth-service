@@ -53,6 +53,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void joinForGitHub(UserDto userDto, String githubUrl) {
         if(userRepository.findByEmail(userDto.getEmail()).orElse(null) != null) {
             throw new AuthServiceException(ErrorCode.DUPLICATED_USER_EMAIL);
@@ -106,6 +107,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void modifyUserinfo(String email, String userUuid, String nickname, String password) {
         User user = userRepository.findByEmail(email).orElseThrow(() ->
                 new AuthServiceException(ErrorCode.USER_NOT_FOUND));
@@ -120,6 +122,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void deleteUser(String email, String userUuid) {
         User user = userRepository.findByEmail(email).orElseThrow(() ->
                 new AuthServiceException(ErrorCode.USER_NOT_FOUND));
