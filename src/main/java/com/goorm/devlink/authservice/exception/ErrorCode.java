@@ -14,6 +14,7 @@ public enum ErrorCode {
     INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "Password is invalid"),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error"),
     PROFILE_CREATION_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Profile Creation Error"),
+    PROFILE_DELETE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Profile Delete Error"),
     INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "Access Token is invalid"),
     INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "Refresh Token is invalid"),
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "Article not founded"),

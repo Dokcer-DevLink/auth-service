@@ -131,7 +131,14 @@ public class UserServiceImpl implements UserService {
             throw new AuthServiceException(ErrorCode.INVALID_USER_UUID);
         }
 
-        user.changeDeleted(true);
-        userRepository.save(user);
+        try {
+            profileServiceClient.deleteMeProfile(user.getUserUuid());
+
+            user.changeDeleted(true);
+            userRepository.save(user);
+        } catch (Exception e) {
+            throw new AuthServiceException(ErrorCode.PROFILE_DELETE_ERROR);
+        }
+
     }
 }
