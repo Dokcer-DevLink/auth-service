@@ -5,7 +5,7 @@ pipeline {
         // Define environment variables.
         dockerHubRegistry = 'lordofkangs'
         DOCKERHUB_CREDENTIALS = 'dockerhub' // Replace with your Jenkins credentials ID for DockerHub..
-        IMAGE_NAME = 'auth-service' // Your DockerHub repository name
+        IMAGE_NAME = 'auth-service-eks' // Your DockerHub repository name
         IMAGE_TAG = 'tagname' // Replace with your desired tag name, or use dynamic values like ${BUILD_NUMBER}
         REGISTRY = 'docker.io' // DockerHub registry
         githubCredential = 'github_cred'
@@ -80,7 +80,7 @@ stage('K8S Manifest Update') {
                     sh "git config --global user.email ${gitEmail}"
                     sh "git config --global user.name ${gitName}"
                     
-                    sh "sed -i 's/k8s:.*\$/k8s:${currentBuild.number}/' ./manifests/deployment.yaml"
+                    sh "sed -i 's/auth-service-eks:.*\$/auth-service-eks:${currentBuild.number}/' ./eks/auth-service.yaml"
                     sh "git add ."
                     sh "git commit -m '[UPDATE] k8s ${currentBuild.number} image versioning'"
                     withCredentials([gitUsernamePassword(credentialsId: githubCredential, gitToolName: 'git-tool')]) {
