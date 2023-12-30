@@ -82,7 +82,7 @@ stage('K8S Manifest Update') {
                     
                     sh "sed -i 's/auth-service:.*\$/auth-service:${currentBuild.number}/' ./eks/auth-service.yaml"
                     sh "git add ."
-                    sh "git commit -m '[UPDATE] k8s ${currentBuild.number} image versioning'"
+                    sh "git commit -m '[UPDATE] Auth-Service K8S ${currentBuild.number} image versioning'"
                     withCredentials([gitUsernamePassword(credentialsId: githubCredential, gitToolName: 'git-tool')]) {
                         sh "git remote set-url origin https://github.com/Dokcer-DevLink/DevOps"
                         sh "git push -u origin main"
