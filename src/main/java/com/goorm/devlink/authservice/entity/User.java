@@ -1,6 +1,8 @@
 package com.goorm.devlink.authservice.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.goorm.devlink.authservice.dto.GitHubProfile;
+import com.goorm.devlink.authservice.dto.OAuthInfo;
 import com.goorm.devlink.authservice.entity.constant.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -69,5 +71,11 @@ public class User extends AuditingFields {
 
     public void changeDeleted(boolean isDeleted) {
         this.isDeleted = isDeleted;
+    }
+
+    public void updateGithubInfo(GitHubProfile githubProfile, String password) {
+        this.email = githubProfile.getEmail();
+        this.nickname = githubProfile.getLogin();
+        this.password = password;
     }
 }
