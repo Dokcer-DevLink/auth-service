@@ -3,13 +3,11 @@ package com.goorm.devlink.authservice.controller;
 import com.goorm.devlink.authservice.dto.GitHubProfile;
 import com.goorm.devlink.authservice.dto.OAuthInfo;
 import com.goorm.devlink.authservice.dto.TokenDto;
-import com.goorm.devlink.authservice.dto.UserDto;
 import com.goorm.devlink.authservice.service.GithubService;
 import com.goorm.devlink.authservice.vo.response.GithubInfoResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
