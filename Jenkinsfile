@@ -54,15 +54,15 @@ pipeline {
             post {
                 failure {
                   echo 'Docker Image Push failure !'
-                  // sh "docker rmi ${dockerHubRegistry}/${IMAGE_NAME}:${currentBuild.number}"
-                  // sh "docker rmi ${dockerHubRegistry}/${IMAGE_NAME}:latest"
-                  sh "docker image prune -f"
+                  sh "docker rmi ${dockerHubRegistry}/${IMAGE_NAME}:${currentBuild.number}"
+                  sh "docker rmi ${dockerHubRegistry}/${IMAGE_NAME}:latest"
+//                   sh "docker image prune -f"
                 }
                 success {
                     echo 'Docker image push success !'
-                    // sh "docker rmi ${dockerHubRegistry}/${IMAGE_NAME}:${currentBuild.number}"
-                    // sh "docker rmi ${dockerHubRegistry}/${IMAGE_NAME}:latest"
-                    sh "docker image prune -f"
+                    sh "docker rmi ${dockerHubRegistry}/${IMAGE_NAME}:${currentBuild.number}"
+                    sh "docker rmi ${dockerHubRegistry}/${IMAGE_NAME}:latest"
+//                     sh "docker image prune -f"
 
                 }
             }
