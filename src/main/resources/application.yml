@@ -52,3 +52,8 @@ eureka:
     register-with-eureka: true
     service-url:
       defaultZone: http://127.0.0.1:8761/eureka
+
+github:
+  client-id: 73750e75473dea445e0b
+  client-secret: 504dc736c26de3cd6febfe257b5293b30285f44f
+  redirect-uri: http://localhost:8080/auth/github/callback

@@ -45,7 +45,7 @@ dependencies {
 //    runtimeOnly 'com.h2database:h2'
 
     // github login
-    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+//    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     implementation group: 'org.kohsuke', name: 'github-api', version: '1.125'
 
     implementation 'org.modelmapper:modelmapper:2.3.8'

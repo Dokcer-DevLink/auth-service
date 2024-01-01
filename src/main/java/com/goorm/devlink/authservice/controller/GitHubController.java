@@ -1,19 +1,35 @@
 package com.goorm.devlink.authservice.controller;
 
+import com.goorm.devlink.authservice.dto.GitHubProfile;
+import com.goorm.devlink.authservice.dto.OAuthInfo;
 import com.goorm.devlink.authservice.dto.TokenDto;
-import lombok.extern.slf4j.Slf4j;
+import com.goorm.devlink.authservice.service.GithubService;
+import com.goorm.devlink.authservice.vo.response.GithubInfoResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@Slf4j
 @RestController
+@RequiredArgsConstructor
 public class GitHubController {
 
-    @GetMapping("/home")
-    public ResponseEntity home(@RequestParam String accessToken, @RequestParam String refreshToken) {
-        TokenDto token = new TokenDto(accessToken, refreshToken);
+    private final GithubService githubService;
+
+    @GetMapping("/login/github")
+    public ResponseEntity<GithubInfoResponse> getGithubInfo() {
+        GithubInfoResponse response = githubService.getGithubInfo();
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/auth/github/callback")
+    public ResponseEntity<TokenDto> githubLogin(@RequestParam String code) {
+        OAuthInfo oAuthInfo = githubService.githubLogin(code);
+        GitHubProfile githubProfile = githubService.getGithubProfile(oAuthInfo);
+
+        TokenDto token = githubService.gitJoinAndLogin(githubProfile, oAuthInfo);
         return ResponseEntity.ok(token);
     }
 }
