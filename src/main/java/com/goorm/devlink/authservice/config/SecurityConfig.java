@@ -48,7 +48,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/logout").permitAll()
                 .antMatchers("/api/reissue").permitAll()
                 .antMatchers("/api/login/github").permitAll()
-                .antMatchers("/api/auth/github/callback").permitAll()
+                .antMatchers("/auth/github/callback").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .apply(new JwtSecurityConfig(tokenProvider));

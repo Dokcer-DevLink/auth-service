@@ -14,12 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
 public class GitHubController {
 
     private final GithubService githubService;
 
-    @GetMapping("/login/github")
+    @GetMapping("/api/login/github")
     public ResponseEntity<GithubInfoResponse> getGithubInfo() {
         GithubInfoResponse response = githubService.getGithubInfo();
 
