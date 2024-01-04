@@ -56,4 +56,4 @@ eureka:
 github:
   client-id: 73750e75473dea445e0b
   client-secret: 504dc736c26de3cd6febfe257b5293b30285f44f
-  redirect-uri: http://localhost:8080/auth/github/callback
+  redirect-uri: http://aff0c8aebd5c142cebf9728a7b6b9fe7-79b29e8561486b51.elb.ap-northeast-2.amazonaws.com/auth/github/callback
