@@ -64,7 +64,7 @@ public class GithubService {
                 GitHubProfile.class).getBody();
     }
 
-    @Transactional
+//    @Transactional
     public TokenDto gitJoinAndLogin(GitHubProfile githubProfile, OAuthInfo oAuthInfo) {
         Optional<User> userOptional = userRepository.findByEmail(githubProfile.getEmail());
 
@@ -79,7 +79,8 @@ public class GithubService {
         } else {
             User user = userOptional.get();
             user.updateGithubInfo(githubProfile, passwordEncoder.encode(oAuthInfo.getAccessToken()));
-            userRepository.save(user);
+//            userRepository.save(user);
+            userService.userUpdate(user);
         }
 
         return authService.authorize(githubProfile.getEmail(), oAuthInfo.getAccessToken());

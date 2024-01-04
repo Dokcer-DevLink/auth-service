@@ -141,4 +141,10 @@ public class UserServiceImpl implements UserService {
         }
 
     }
+
+    @Override
+    @Transactional
+    public User userUpdate(User user) {
+        return userRepository.save(user);
+    }
 }
